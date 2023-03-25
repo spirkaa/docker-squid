@@ -103,7 +103,8 @@ RUN set -x && \
 WORKDIR /tmp/build/tools/squidclient
 RUN make && make install-strip
 
-RUN sed -i '1s;^;include /etc/squid/conf.d/*.conf\n;' /etc/squid/squid.conf && \
+RUN sed -i '/localnet/s/^# //g' /etc/squid/squid.conf && \
+    sed -i '1s;^;include /etc/squid/conf.d/*.conf\n;' /etc/squid/squid.conf && \
     echo 'include /etc/squid/conf.d.tail/*.conf' >> /etc/squid/squid.conf
 
 # --- --- --- --- --- --- --- --- ---
@@ -134,7 +135,6 @@ COPY --from=build /usr/lib/squid/ /usr/lib/squid/
 COPY --from=build /usr/share/squid/ /usr/share/squid/
 COPY --from=build /usr/sbin/squid /usr/sbin/squid
 COPY --from=build /usr/bin/squidclient /usr/bin/squidclient
-
 
 RUN install -d -o squid -g squid \
         /var/cache/squid \
